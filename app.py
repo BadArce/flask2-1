@@ -79,7 +79,7 @@ def get_user_by_name(user_id):
     user_id = int(user_id)
   else:
     return jsonify('user_id must be numeric'), 400
-  results = cursor.execute('SELECT users.user_id, users.first_name, users.last_name, users.email, users.password, users.city, users.state, organizations.org_id, organizations.name, organizations.active FROM Users JOIN organizations On users.organization = organizations. org_id WHERE user_id = %s', [user_id])
+  results = cursor.execute('SELECT u.user_id, u.first_name, u.last_name, u.email, u.password, u.city, u.state, o.org_id, o.name, o.active FROM Users u JOIN organizations o On users.organization = organizations. org_id WHERE user_id = %s', [user_id])
   results= cursor.fetchone()
   if results == None:
     return jsonify('No user found, please try again.'), 404
