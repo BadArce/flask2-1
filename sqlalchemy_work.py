@@ -70,7 +70,7 @@ class AppUsers(db.Model):
 
 class UsersSchema(ma.Schema):
   class Meta:
-    fields = ['user_id','first_name','last_name','email','password','city','state','org_id','role','active']
+    fields = ['user_id','first_name','last_name','email','city','state','org_id','role','active']
 
 user_schema = UsersSchema()
 users_schema = UsersSchema(many=True)
@@ -93,36 +93,36 @@ def create_all():
     db.session.add(record)
     db.session.commit()
 
-def populate_dbs():
+# def populate_dbs():
 
-  data =  [["1", "Octo Studios", "555.855.5585", "San Diego", "California"],["2", "Namco", "555.867.5309", "New York City", "New York"],["3", "Skynet Tech.", "555.012.3456", "Los Angeles", "California"]]
-  for x in data:
-    org_id = x[0]
-    print(org_id)
-    name = x[1]
-    phone = x[2]
-    city = x[3]
-    state = x[4]
-    check = cursor.execute((f'SELECT org_id FROM Organizations WHERE org_id = {org_id}'))
-    check = cursor.fetchone()
-    if check == None:
-      cursor.execute("INSERT INTO Organizations (org_id, name, phone, city, state) VALUES(%s,%s,%s,%s,%s)",(org_id, name, phone, city, state))
-  data = [["100","Mark","Hoppus","mark@hoppus.net", "HappyHolidays123", "San Diego", "California","1"],["101","Tom","Delonge","tom@hoppus.net","Tak30ff!","San Diego","California","1"],["102","Travis","Barker","travis@hoppus.net","h0t4th3Kards","Los Angeles","California","1"],["103","Yugi","Yami","Yugi@oh.io","Heart0ftheC4rds","Tokyo","Japan","2"]]
-  for x in data:
-    user_id = x[0]
-    first_name = x[1]
-    last_name = x[2]
-    email = x[3]
-    password = x[4]
-    city = x[5]
-    state = x[6]
-    org_id = x[7]
-    check = cursor.execute((f'SELECT user_id FROM Users WHERE user_id = {user_id}'))
-    check = cursor.fetchone()
-    if check == None:
-      cursor.execute("INSERT INTO Users (user_id, first_name, last_name, email, password, city, state, organization) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",(user_id, first_name, last_name, email, password, city, state, organization))
-  conn.commit()
-  return
+#   data =  [["1", "Octo Studios", "555.855.5585", "San Diego", "California"],["2", "Namco", "555.867.5309", "New York City", "New York"],["3", "Skynet Tech.", "555.012.3456", "Los Angeles", "California"]]
+#   for x in data:
+#     org_id = x[0]
+#     print(org_id)
+#     name = x[1]
+#     phone = x[2]
+#     city = x[3]
+#     state = x[4]
+#     check = cursor.execute((f'SELECT org_id FROM Organizations WHERE org_id = {org_id}'))
+#     check = cursor.fetchone()
+#     if check == None:
+#       cursor.execute("INSERT INTO Organizations (org_id, name, phone, city, state) VALUES(%s,%s,%s,%s,%s)",(org_id, name, phone, city, state))
+#   data = [["100","Mark","Hoppus","mark@hoppus.net", "HappyHolidays123", "San Diego", "California","1"],["101","Tom","Delonge","tom@hoppus.net","Tak30ff!","San Diego","California","1"],["102","Travis","Barker","travis@hoppus.net","h0t4th3Kards","Los Angeles","California","1"],["103","Yugi","Yami","Yugi@oh.io","Heart0ftheC4rds","Tokyo","Japan","2"]]
+#   for x in data:
+#     user_id = x[0]
+#     first_name = x[1]
+#     last_name = x[2]
+#     email = x[3]
+#     password = x[4]
+#     city = x[5]
+#     state = x[6]
+#     org_id = x[7]
+#     check = cursor.execute((f'SELECT user_id FROM Users WHERE user_id = {user_id}'))
+#     check = cursor.fetchone()
+#     if check == None:
+#       cursor.execute("INSERT INTO Users (user_id, first_name, last_name, email, password, city, state, organization) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",(user_id, first_name, last_name, email, password, city, state, organization))
+#   conn.commit()
+#   return
 
 
 
@@ -222,25 +222,9 @@ def deactivate_user(user_id):
 
 
 @app.route('/users/<user_id>', methods=(['GET']))
-def get_user_by_name(user_id):
-  results = cursor.execute('SELECT u.user_id, u.first_name, u.last_name, u.email, u.password, u.city, u.state, u.role, u.active, o.org_id, o.name, o.active FROM Users u JOIN organizations o On u.org_id = o.org_id WHERE u.user_id = %s', [user_id])
-  print(results)
-  results= cursor.fetchone()
-  if results == None:
-    return jsonify('No user found, please try again.'), 404
-  results_dictionary = {
-    'user_id' : results[0],
-    'first_name' : results[1],
-    'last_name' : results[2],
-    'email' : results[3],
-    'password' : results[4],
-    'city' : results[5],
-    'state' : results[6],
-    'role' : results[7],
-    'active': results[8],
-    'organization' : results[10]
-  }
-  return jsonify(results_dictionary),200
+def get_user_by_id(user_id):
+  user_record = db.session.query(AppUsers).filter(AppUsers.user_id==user_id).first()
+  return jsonify(users_schema.dump(user_record)),200
 
 @app.route('/users/delete/<user_id>', methods=(['DELETE']))
 def delete_user_by_id(user_id):
@@ -255,26 +239,8 @@ def delete_user_by_id(user_id):
 
 @app.route('/users/list', methods=(['GET']))
 def get_all_users():
-  results = cursor.execute('SELECT user_id, first_name, last_name, email, password, city, state, org_id, role, active FROM Users')
-  results = cursor.fetchall()
-  list_of_users = []
-
-  for x in results:
-    list_of_users.append({
-    'user_id' : x[0],
-    'first_name' : x[1],
-    'last_name' : x[2],
-    'email' : x[3],
-    'password' : x[4],
-    'city' : x[5],
-    'state' : x[6],
-    'org_id' : x[7],
-    'role' : x[8],
-    'active' : x[9]
-    })
-  
-  
-  return jsonify({'Users' : list_of_users}),200
+  user_records = db.session.query(AppUsers).all()
+  return jsonify(users_schema.dump(user_records)),200
 
 # #Org routes
 
@@ -316,24 +282,9 @@ def edit_org(org_id):
 
 
 @app.route('/orgs/<org_id>', methods=(['GET']))
-def get_org_by_name(org_id):
-  if org_id.isnumeric():
-    org_id = int(org_id)
-  else:
-    return jsonify('Org_id must be numeric'), 400
-  results = cursor.execute('SELECT org_id, name, phone, city, state, active FROM Organizations WHERE org_id = %s', [org_id])
-  results= cursor.fetchone()
-  if results == None:
-    return jsonify('No organization found, please try again.'), 404
-  results_dictionary = {
-    'org_id' : results[0],
-    'name' : results[1],
-    'phone' : results[2],
-    'city' : results[3],
-    'state' : results[4],
-    'active' : results[5]
-  }
-  return jsonify(results_dictionary),200
+def get_org_by_id(org_id):
+  org_records = db.session.query(AppOrgs).filter(AppOrgs.org_id==org_id).first()
+  return jsonify(users_schema.dump(org_records)),200
 
 @app.route('/orgs/delete/<org_id>', methods=(['DELETE']))
 def delete_org_by_id(org_id):
@@ -353,23 +304,8 @@ def delete_org_by_id(org_id):
 
 @app.route('/orgs/list', methods=(['GET']))
 def get_all_orgs():
-  results = cursor.execute('SELECT org_id, name, phone, city, state, active FROM Organizations')
-  results = cursor.fetchall()
-  list_of_users = []
-
-  for x in results:
-    list_of_users.append({
-    'org_id' : x[0],
-    'name' : x[1],
-    'phone' : x[2],
-    'city' : x[3],
-    'state' : x[4],
-    'active' : x[5]
-    })
-  
-  
-  return jsonify({'Organizations' : list_of_users}),200
-
+  org_records = db.session.query(AppOrgs).all()
+  return jsonify(users_schema.dump(org_records)),200
 
 
 

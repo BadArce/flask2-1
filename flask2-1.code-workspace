@@ -1,0 +1,13 @@
+{
+  "folders": [
+	{
+		"path": "."
+	},
+	{
+		"path": "..\\..\\..\\Personal Projects\\chataa"
+	}
+],
+  "settings": {
+    "liveServer.settings.multiRootWorkspaceName": "chataa"
+  }
+}
