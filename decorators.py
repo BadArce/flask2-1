@@ -22,7 +22,7 @@ def only_strings(func):
     print(newargs)
     return(
       func(
-        *newargs
+        *newargs, **kwargs
       )
     )
 
