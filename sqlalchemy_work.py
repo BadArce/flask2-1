@@ -10,8 +10,6 @@ import marshmallow as ma
 import uuid
 from datetime import datetime
 
-conn = psycopg2.connect("dbname='coursedb' host='localhost' user='postgres'")
-cursor = conn.cursor()
 app = Flask(__name__)
 database_host = "ec2-44-206-137-96.compute-1.amazonaws.com"
 database_name = "d5enhbvgtojj6e"
@@ -19,6 +17,8 @@ database_username = "vwskpgcmqizdpc"
 database_password = "852e0d06674f0442b34464967bff60b1194b0d93150af5c78410eee62a7fb2e9"
 app.config['SQLALCHEMY_DATABASE_URI'] = F'postgres://{database_username}:{database_password}@{database_host}:5432/{database_name}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+conn = psycopg2.connect(f"dbname='{database_name}' host='{database_host}' user='{database_username}' password='{database_password}'")
+cursor = conn.cursor()
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
