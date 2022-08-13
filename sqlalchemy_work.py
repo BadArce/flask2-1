@@ -83,10 +83,11 @@ def create_all():
   print("Querying for Super Admin user . . .")
   user_data = db.session.query(AppUsers).filter(AppUsers.email == 'admin@devpipeline.com').first()
   if user_data == None:
-    print('App User not Found, creating Super Admin (admin@devpipeline.com). . . ')
-    password = ''
-    while password == "":
-      password = input('Please enter a new SuperAdmin password: ')
+    password = 1234
+    # print('App User not Found, creating Super Admin (admin@devpipeline.com). . . ')
+    # password = ''
+    # while password == "":
+    #   password = input('Please enter a new SuperAdmin password: ')
 
     org_record = AppOrgs('Dev Pipeline','','Orem','UT')
     record = AppUsers('Super', 'Admin', 'admin@devpipeline.com', password, 'Orem', 'UT', 1, 'super-admin')
