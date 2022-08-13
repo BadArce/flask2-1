@@ -18,10 +18,13 @@ database_username = os.environ.get('lmaa-db-username')
 database_password = os.environ.get('lmaa-db-password')
 app.config['SQLALCHEMY_DATABASE_URI'] = F'postgresql://{database_username}:{database_password}@{database_host}:5432/{database_name}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-conn = psycopg2.connect(f"dbname='{database_name}' host='{database_host}' user='{database_username}' password='{database_password}'")
+conn = psycopg2.connect(f"dbname='{database_name}' host='{database_host}' user='{database_username}'  password='{database_password}'")
 cursor = conn.cursor()
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+
+print(database_username)
+print(database_password)
 
 
 
