@@ -1,1 +1,1 @@
-web gunicorn app:app
+web gunicorn sqlalchemy_work:app
