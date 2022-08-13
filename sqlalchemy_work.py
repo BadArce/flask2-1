@@ -23,8 +23,6 @@ cursor = conn.cursor()
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
-print(database_username)
-print(database_password)
 
 
 
